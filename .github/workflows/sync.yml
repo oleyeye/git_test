@@ -13,27 +13,18 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  Sync-code-to-dev:
-    # The type of runner that the job will run on
+  update-to-dev:
+    name: Merge master into dev after master is changed
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Sync code to dev
-        run: echo Sync code to DEV and QA branch
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          git checkout master
-          git pull
-          git checkout dev
-          git pull
-          git merge master
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: merge
+        uses: mtanzi/action-automerge@v1
+        id: merge
+        with:
+          github_token: ${{ github.token }}
+          source: 'master'
+          target: 'dev'
+          # webhook_url: #if present add the Slack webhook
